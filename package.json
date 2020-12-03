@@ -29,10 +29,12 @@
   },
   "homepage": "https://github.com/cytim/nodejs-typed-dotenv#readme",
   "devDependencies": {
+    "@types/lodash": "^4.14.165",
     "@types/node": "^14.14.10",
     "typescript": "^4.1.2"
   },
   "dependencies": {
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "lodash": "^4.17.20"
   }
 }

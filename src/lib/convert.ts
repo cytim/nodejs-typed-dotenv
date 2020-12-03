@@ -3,7 +3,6 @@ const RE_ARRAY_DELIMITER = /\s*,\s*/;
 const strTo = {
   array: (data: string, type: 'string' | 'number' | 'boolean') => {
     const arr = data.split(RE_ARRAY_DELIMITER);
-    console.log(arr);
     try {
       let output = [];
       for (const item of arr) {
