@@ -1,0 +1,41 @@
+{
+  "REQUIRED__WITHOUT_NAME": { "required": true, "types": ["string"] },
+  "REQUIRED__WITH_NAME": { "required": true, "types": ["string"], "name": "requiredWithName" },
+  "REQUIRED__MULTI_TYPE": { "required": true, "types": ["boolean", "number", "string"] },
+  "OPTIONAL__WITHOUT_NAME": { "required": false, "types": ["string"] },
+  "OPTIONAL__WITHOUT_NAME_BUT_DEFAULT": { "required": false, "types": ["string"], "defaultValue": "foo" },
+  "OPTIONAL__WITH_NAME": { "required": false, "types": ["string"], "name": "optionalWithName" },
+  "OPTIONAL__WITH_NAME_AND_DEFAULT": {
+    "required": false,
+    "types": ["string"],
+    "name": "optionalWithNameAndDefault",
+    "defaultValue": "foobar"
+  },
+  "OPTIONAL__MULTI_TYPE": { "required": false, "types": ["boolean", "number", "string"] },
+  "OPTIONAL__STRING_ARRAY": {
+    "required": false,
+    "types": ["string[]"],
+    "defaultValue": ["xxx", "yyy", "zzz"]
+  },
+  "OPTIONAL__INTEGER": { "required": false, "types": ["number"], "defaultValue": 777 },
+  "OPTIONAL__FLOAT": { "required": false, "types": ["number"], "defaultValue": 3.14 },
+  "OPTIONAL__NUMBER_ARRAY": {
+    "required": false,
+    "types": ["number[]"],
+    "defaultValue": [777, 3.14]
+  },
+  "OPTIONAL__TRUE": { "required": false, "types": ["boolean"], "defaultValue": true },
+  "OPTIONAL__FALSE": { "required": false, "types": ["boolean"], "defaultValue": false },
+  "OPTIONAL__BOOLEAN_ARRAY": {
+    "required": false,
+    "types": ["boolean[]"],
+    "defaultValue": [true, true, false, false]
+  },
+  "OPTIONAL__JSON_ARRAY": {
+    "required": false,
+    "types": ["json"],
+    "defaultValue": ["xxx", "yyy", "zzz"]
+  },
+  "OPTIONAL__JSON_OBJECT": { "required": false, "types": ["json"], "defaultValue": { "foo": "bar" } },
+  "MISSING_ANNOTATION": {}
+}
