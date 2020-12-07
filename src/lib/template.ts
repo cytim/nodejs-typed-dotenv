@@ -14,12 +14,22 @@ import {
 const NEWLINES_MATCH = /\n|\r|\r\n/;
 const RE_COMMENT_BLOCK_START = /^##$/;
 const RE_COMMENT_LINE = /^#\s*(.*)$/;
-const RE_ANNOTATION_REQUIRED = /^@required\s*\{(.+)\}\s*([\w.]+)?$/;
-const RE_ANNOTATION_OPTIONAL = /^@optional\s*\{(.+)\}\s*([\w.]+)?(\s*=\s*(.+))?$/;
+const RE_ANNOTATION_REQUIRED = /^@required\s*\{(.+?)\}\s*([\w.]+)?$/;
+const RE_ANNOTATION_OPTIONAL = /^@optional\s*\{(.+?)\}\s*([\w.]+)?(\s*=\s*(.+))?$/;
 const RE_TYPE_DELIMITER = /\s*\|\s*/;
 const RE_INI_KEY_VAL = /^\s*([\w.-]+)\s*=\s*(.*)?\s*$/;
 
 const ALLOWED_TYPES = ['string', 'string[]', 'number', 'number[]', 'boolean', 'boolean[]', 'json'];
+
+const assign = (obj: { [key: string]: any }, src: { [key: string]: any }) => {
+  const newSrc: { [key: string]: any } = {};
+  for (const key in src) {
+    if (src[key] !== undefined) {
+      newSrc[key] = src[key];
+    }
+  }
+  return Object.assign(obj, newSrc);
+};
 
 const getTypes = (rawTypes: string) => {
   const types = rawTypes.trim().split(RE_TYPE_DELIMITER);
@@ -47,7 +57,7 @@ const setAnnotation = (annotation: TemplateEnvAnnotation, content: string, { deb
 
     const [, rawTypes, name] = matches;
     const types = getTypes(rawTypes);
-    return Object.assign(annotation, {
+    return assign(annotation, {
       required: true,
       types,
       name,
@@ -68,7 +78,7 @@ const setAnnotation = (annotation: TemplateEnvAnnotation, content: string, { deb
     const [, rawTypes, name, , rawDefaultValue] = matches;
     const types = getTypes(rawTypes);
     const defaultValue = rawDefaultValue != null ? convert(rawDefaultValue, types) : undefined;
-    return Object.assign(annotation, {
+    return assign(annotation, {
       required: false,
       types,
       name,
