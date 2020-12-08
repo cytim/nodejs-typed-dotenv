@@ -1,7 +1,7 @@
 import { set, camelCase, snakeCase } from 'lodash';
 import { DotenvParseOutput } from 'dotenv/types';
 import { convert } from './convert';
-import { Env, FrameOptions, TemplateParseOutput } from './types';
+import { Env, ProofreadOptions, TemplateParseOutput } from './types';
 
 const toCase = (str: string, caseStyle: 'camelCase' | 'snake_case') => {
   switch (caseStyle) {
@@ -14,10 +14,10 @@ const toCase = (str: string, caseStyle: 'camelCase' | 'snake_case') => {
   }
 };
 
-export const frame = (
+export const proofread = (
   dotenvParsed: DotenvParseOutput,
   tmplParsed: TemplateParseOutput,
-  options: FrameOptions
+  options: ProofreadOptions
 ): { rawEnv?: Env; env?: Env; error?: Error } => {
   const opts = {
     removeUnknownVariables: options.removeUnknownVariables ?? false,
@@ -70,4 +70,4 @@ export const frame = (
   }
 };
 
-export default frame;
+export default proofread;

@@ -3,8 +3,8 @@ import { readFileSync } from 'fs';
 import { parse as dotenvParse, DotenvConfigOptions, DotenvConfigOutput, DotenvParseOutput } from 'dotenv';
 import { log } from './logger';
 import { config as tmplConfig } from './template';
-import { frame } from './frame';
-import { ConfigOptions, ConfigOutput, Encoding, FrameOptions, TemplateParseOutput } from './types';
+import { proofread } from './proofread';
+import { ConfigOptions, ConfigOutput, Encoding, ProofreadOptions, TemplateParseOutput } from './types';
 
 /**
  * Override `dotenv.config` to by-pass the `process.env` assignment.
@@ -50,18 +50,18 @@ export const config = (options?: ConfigOptions): ConfigOutput => {
     return { error: dotenvConfigOutput.error };
   }
 
-  const framed = frame(
+  const proofed = proofread(
     dotenvConfigOutput.parsed as DotenvParseOutput,
     tmplConfigOutput.parsed as TemplateParseOutput,
-    options as FrameOptions
+    options as ProofreadOptions
   );
-  if (framed.error) {
-    return { error: framed.error };
+  if (proofed.error) {
+    return { error: proofed.error };
   }
 
   // TODO: setup process.env
 
-  return { env: framed.env, template: tmplConfigOutput.parsed };
+  return { env: proofed.env, template: tmplConfigOutput.parsed };
 };
 
 export default config;

@@ -49,7 +49,7 @@ export type TemplateConfigOutput = {
   error?: Error;
 };
 
-export type FrameOptions = {
+export type ProofreadOptions = {
   removeUnknownVariables?: boolean;
   rename?: {
     enabled?: boolean;
@@ -60,7 +60,7 @@ export type FrameOptions = {
 
 export type ConfigOptions = {
   template?: TemplateConfigOptions;
-} & FrameOptions &
+} & ProofreadOptions &
   DotenvConfigOptions;
 
 export type ConfigOutput = {
