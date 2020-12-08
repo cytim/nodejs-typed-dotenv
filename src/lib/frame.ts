@@ -1,7 +1,18 @@
-import _ from 'lodash';
+import { set, camelCase, snakeCase } from 'lodash';
 import { DotenvParseOutput } from 'dotenv/types';
 import { convert } from './convert';
 import { Env, FrameOptions, TemplateParseOutput } from './types';
+
+const toCase = (str: string, caseStyle: 'camelCase' | 'snake_case') => {
+  switch (caseStyle) {
+    case 'camelCase':
+      return camelCase(str);
+    case 'snake_case':
+      return snakeCase(str);
+    default:
+      return str;
+  }
+};
 
 export const frame = (
   dotenvParsed: DotenvParseOutput,
@@ -12,7 +23,7 @@ export const frame = (
     removeUnknownVariables: options.removeUnknownVariables ?? false,
     rename: {
       enabled: options.rename?.enabled ?? options.rename != null,
-      case: options.rename?.case ?? 'camelCase',
+      caseStyle: options.rename?.caseStyle ?? 'camelCase',
       nestingDelimiter: options.rename?.nestingDelimiter ?? '__',
     },
   };
@@ -45,9 +56,9 @@ export const frame = (
         let keyPath: string | string[] | undefined = tmplParsed[key]?.name;
         if (!keyPath) {
           keyPath = opts.rename.nestingDelimiter ? key.split(opts.rename.nestingDelimiter) : [key];
-          keyPath = keyPath.map((k) => _[opts.rename.case](k));
+          keyPath = keyPath.map((k) => toCase(k, opts.rename.caseStyle));
         }
-        _.set(env, keyPath, rawEnv[key]);
+        set(env, keyPath, rawEnv[key]);
       }
     } else {
       env = rawEnv;

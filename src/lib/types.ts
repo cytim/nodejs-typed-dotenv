@@ -53,7 +53,7 @@ export type FrameOptions = {
   removeUnknownVariables?: boolean;
   rename?: {
     enabled?: boolean;
-    case?: 'camelCase' | 'snakeCase';
+    caseStyle?: 'camelCase' | 'snake_case';
     nestingDelimiter?: string | null;
   };
 };
