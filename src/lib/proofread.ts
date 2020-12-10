@@ -55,7 +55,7 @@ export const proofread = (
       for (const key in rawEnv) {
         let keyPath: string | string[] | undefined = tmplParsed[key]?.name;
         if (!keyPath) {
-          keyPath = opts.rename.nestingDelimiter ? key.split(opts.rename.nestingDelimiter) : [key];
+          keyPath = opts.rename.nestingDelimiter ? key.split(opts.rename.nestingDelimiter).filter((k) => k) : [key];
           keyPath = keyPath.map((k) => toCase(k, opts.rename.caseStyle));
         }
         set(env, keyPath, rawEnv[key]);
