@@ -49,7 +49,7 @@ export type TemplateConfigOutput = {
 };
 
 export type ProofreadOptions = {
-  removeUnknownVariables?: boolean;
+  unknownVariables?: 'keep' | 'remove' | 'error';
   rename?: {
     enabled?: boolean;
     caseStyle?: 'camelCase' | 'snake_case';

@@ -14,13 +14,36 @@ const toCase = (str: string, caseStyle: 'camelCase' | 'snake_case') => {
   }
 };
 
+const checkVariables = (
+  dotenvParsed: DotenvParseOutput,
+  tmplParsed: TemplateParseOutput,
+  opts: { unknownVariables: string }
+) => {
+  // Check for unknown variables
+  if (opts.unknownVariables === 'error') {
+    const unknowns = Object.keys(dotenvParsed).filter((k) => tmplParsed[k] == null);
+    if (unknowns.length) {
+      throw new Error(`Unknown variables are not allowed: ${unknowns}`);
+    }
+  }
+
+  // Check for missing required variables
+  const missings = Object.keys(tmplParsed).filter((k) => {
+    const val = dotenvParsed[k];
+    return tmplParsed[k].required === true && (val == null || val === '');
+  });
+  if (missings.length) {
+    throw new Error(`Some required variables are missing: ${missings}`);
+  }
+};
+
 export const proofread = (
   dotenvParsed: DotenvParseOutput,
   tmplParsed: TemplateParseOutput,
   options?: ProofreadOptions
 ): { rawEnv?: Env; env?: Env; error?: Error } => {
   const opts = {
-    removeUnknownVariables: options?.removeUnknownVariables ?? false,
+    unknownVariables: options?.unknownVariables ?? 'keep',
     rename: {
       enabled: options?.rename?.enabled ?? options?.rename != null,
       caseStyle: options?.rename?.caseStyle ?? 'camelCase',
@@ -28,16 +51,14 @@ export const proofread = (
     },
   };
 
-  const rawEnv = opts.removeUnknownVariables ? {} : Object.assign({}, dotenvParsed);
-
   try {
+    checkVariables(dotenvParsed, tmplParsed, opts);
+
+    const rawEnv = opts.unknownVariables === 'remove' ? {} : Object.assign({}, dotenvParsed);
+
     for (const key in tmplParsed) {
       const annotation = tmplParsed[key];
       let val: any = dotenvParsed[key];
-
-      if (annotation.required && (val == null || val === '')) {
-        throw new Error(`Required variable [${key}] is missing`);
-      }
 
       if (!annotation.required && (val == null || val === '')) {
         val = annotation.defaultValue ?? null;

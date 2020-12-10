@@ -136,10 +136,22 @@ describe('lib/proofread', () => {
       // [should be removed] UNKNOWN_VARIABLE: '--- unchanged --',
     };
 
-    const { error, rawEnv, env } = proofread(testDotenvParsed, testTmplParsed, { removeUnknownVariables: true });
+    const { error, rawEnv, env } = proofread(testDotenvParsed, testTmplParsed, { unknownVariables: 'remove' });
     expect(error).toBeUndefined();
     expect(rawEnv).toStrictEqual(expectedRawEnv);
     expect(env).toStrictEqual(expectedRawEnv);
+  });
+
+  it('throw error for the unknown variable', () => {
+    const testDotenvParsed = {
+      REQUIRED__WITHOUT_NAME: '--- unchanged --',
+      REQUIRED__WITH_NAME: '--- unchanged --',
+      REQUIRED__MULTI_TYPE: '--- unchanged --',
+      UNKNOWN_VARIABLE: '--- unchanged --',
+    };
+
+    const { error } = proofread(testDotenvParsed, testTmplParsed, { unknownVariables: 'error' });
+    expect(error?.message).toContain('Unknown variables are not allowed');
   });
 
   it('rename the variables, using default rename options', () => {
@@ -347,14 +359,13 @@ describe('lib/proofread', () => {
     expect(env).toStrictEqual(expectedEnv);
   });
 
-  it('throw error because a required variable is missing', () => {
+  it('throw error because some required variables are missing', () => {
     const testDotenvParsed = {
       REQUIRED__WITHOUT_NAME: '-- unchanged --',
-      REQUIRED__WITH_NAME: '-- unchanged --',
     };
 
     const { error } = proofread(testDotenvParsed, testTmplParsed);
-    expect(error?.message).toContain('Required variable [REQUIRED__MULTI_TYPE] is missing');
+    expect(error?.message).toContain('Some required variables are missing');
   });
 
   it('bubble up the ConvertError when a variable value cannot be converted to the specified data type(s)', () => {
