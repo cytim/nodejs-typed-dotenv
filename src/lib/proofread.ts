@@ -17,14 +17,14 @@ const toCase = (str: string, caseStyle: 'camelCase' | 'snake_case') => {
 export const proofread = (
   dotenvParsed: DotenvParseOutput,
   tmplParsed: TemplateParseOutput,
-  options: ProofreadOptions
+  options?: ProofreadOptions
 ): { rawEnv?: Env; env?: Env; error?: Error } => {
   const opts = {
-    removeUnknownVariables: options.removeUnknownVariables ?? false,
+    removeUnknownVariables: options?.removeUnknownVariables ?? false,
     rename: {
-      enabled: options.rename?.enabled ?? options.rename != null,
-      caseStyle: options.rename?.caseStyle ?? 'camelCase',
-      nestingDelimiter: options.rename?.nestingDelimiter ?? '__',
+      enabled: options?.rename?.enabled ?? options?.rename != null,
+      caseStyle: options?.rename?.caseStyle ?? 'camelCase',
+      nestingDelimiter: options?.rename?.nestingDelimiter ?? '__',
     },
   };
 
