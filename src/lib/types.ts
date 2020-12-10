@@ -30,7 +30,7 @@ export type TemplateEnvAnnotation = {
 
 export type TemplateParseOptions = {
   debug?: boolean;
-  throwMissingAnnotation?: boolean;
+  errorOnMissingAnnotation?: boolean;
 };
 
 export type TemplateParseOutput = {
@@ -39,10 +39,9 @@ export type TemplateParseOutput = {
 
 export type TemplateConfigOptions = {
   path?: string;
-  throwMissingAnnotation?: boolean;
   encoding?: Encoding;
   debug?: boolean;
-};
+} & TemplateParseOptions;
 
 export type TemplateConfigOutput = {
   parsed?: TemplateParseOutput;

@@ -112,7 +112,7 @@ const parseCommentBlock = (lines: string[], start: number, { debug }: { debug: b
 
 export const parse = (src: string | Buffer, options?: TemplateParseOptions): TemplateParseOutput => {
   const debug = options?.debug ?? false;
-  const throwMissingAnnotation = options?.throwMissingAnnotation ?? false;
+  const errorOnMissingAnnotation = options?.errorOnMissingAnnotation ?? false;
   const output: TemplateParseOutput = {};
 
   const lines = src.toString().split(NEWLINES_MATCH);
@@ -133,7 +133,7 @@ export const parse = (src: string | Buffer, options?: TemplateParseOptions): Tem
         output[matchKeyVal[1]] = annotation || {};
         if (!annotation) {
           const msg = `No annotation is found for variable [${matchKeyVal[1]}] (Ln ${i + 1})`;
-          if (throwMissingAnnotation) {
+          if (errorOnMissingAnnotation) {
             throw new Error(msg);
           } else {
             debug && log(`tmpl.parse: ${msg}`);
@@ -157,10 +157,10 @@ export const config = (options?: TemplateConfigOptions): TemplateConfigOutput =>
   const path = options?.path ?? resolve(process.cwd(), '.env.template');
   const encoding = options?.encoding ?? 'utf8';
   const debug = options?.debug ?? false;
-  const throwMissingAnnotation = options?.throwMissingAnnotation ?? false;
+  const errorOnMissingAnnotation = options?.errorOnMissingAnnotation ?? false;
 
   try {
-    const parsed = parse(readFileSync(path, { encoding }), { debug, throwMissingAnnotation });
+    const parsed = parse(readFileSync(path, { encoding }), { debug, errorOnMissingAnnotation });
     return { parsed };
   } catch (error) {
     return { error };

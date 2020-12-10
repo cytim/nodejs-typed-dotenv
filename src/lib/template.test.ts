@@ -34,7 +34,7 @@ describe('lib/template', () => {
     });
 
     it('throw error because one of the variables is not surrounded by any valid annotation', () => {
-      const missingAnnotation = () => parse(testTmplBuffer, { throwMissingAnnotation: true });
+      const missingAnnotation = () => parse(testTmplBuffer, { errorOnMissingAnnotation: true });
       expect(missingAnnotation).toThrow('No annotation is found for variable');
     });
 
@@ -133,8 +133,8 @@ FOO=
       expect(parsed).toStrictEqual(testTmplParsed);
     });
 
-    it('config the template, with throwMissingAnnotation set to true', () => {
-      const { error } = config({ throwMissingAnnotation: true });
+    it('config the template, with errorOnMissingAnnotation set to true', () => {
+      const { error } = config({ errorOnMissingAnnotation: true });
       expect(error?.message).toContain('No annotation is found for variable');
     });
 
