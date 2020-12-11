@@ -25,6 +25,7 @@ export type TemplateEnvAnnotation = {
   required?: boolean;
   types?: DataTypeOption[];
   name?: string;
+  rawDefaultValue?: string;
   defaultValue?: any;
 };
 

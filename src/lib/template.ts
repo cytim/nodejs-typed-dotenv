@@ -43,7 +43,11 @@ const getTypes = (rawTypes: string) => {
   return types as DataTypeOption[];
 };
 
-const setAnnotation = (annotation: TemplateEnvAnnotation, content: string, { debug }: { debug: boolean }) => {
+const setAnnotation = (
+  annotation: TemplateEnvAnnotation,
+  content: string,
+  { debug }: { debug: boolean }
+): TemplateEnvAnnotation => {
   if (content.startsWith('@required')) {
     debug && log(`tmpl.setAnnotation: Found @required`);
 
@@ -82,6 +86,7 @@ const setAnnotation = (annotation: TemplateEnvAnnotation, content: string, { deb
       required: false,
       types,
       name,
+      rawDefaultValue,
       defaultValue,
     });
   }
