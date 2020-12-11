@@ -54,37 +54,41 @@ export const compose = (
   checkVariables(dotenvParsed, tmplParsed, opts);
 
   const rawEnv = opts.unknownVariables === 'remove' ? {} : Object.assign({}, dotenvParsed);
+  const convertedEnv = opts.unknownVariables === 'remove' ? {} : Object.assign({}, dotenvParsed);
 
   for (const key in tmplParsed) {
     const annotation = tmplParsed[key];
-    let val: any = dotenvParsed[key];
+    let rawVal: any = dotenvParsed[key];
+    let convertedVal: any = dotenvParsed[key];
 
-    if (!annotation.required && (val == null || val === '')) {
-      val = annotation.defaultValue ?? null;
+    if (!annotation.required && (rawVal == null || rawVal === '')) {
+      rawVal = annotation.rawDefaultValue ?? '';
+      convertedVal = annotation.defaultValue ?? null;
     } else {
       if (annotation.types) {
-        val = convert(val, annotation.types);
+        convertedVal = convert(convertedVal, annotation.types);
       }
     }
 
-    rawEnv[key] = val;
+    rawEnv[key] = rawVal;
+    convertedEnv[key] = convertedVal;
   }
 
   let env = {};
   if (opts.rename.enabled) {
-    for (const key in rawEnv) {
+    for (const key in convertedEnv) {
       let keyPath: string | string[] | undefined = tmplParsed[key]?.name;
       if (!keyPath) {
         keyPath = opts.rename.nestingDelimiter ? key.split(opts.rename.nestingDelimiter).filter((k) => k) : [key];
         keyPath = keyPath.map((k) => toCase(k, opts.rename.caseStyle));
       }
-      set(env, keyPath, rawEnv[key]);
+      set(env, keyPath, convertedEnv[key]);
     }
   } else {
-    env = rawEnv;
+    env = convertedEnv;
   }
 
-  return { rawEnv, env };
+  return { rawEnv, convertedEnv, env };
 };
 
 export default compose;

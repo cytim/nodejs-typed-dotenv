@@ -17,6 +17,10 @@ export type DataType = string | string[] | number | number[] | boolean | boolean
 
 export type DataTypeOption = 'string' | 'string[]' | 'number' | 'number[]' | 'boolean' | 'boolean[]' | 'json';
 
+export type RawEnv = {
+  [key: string]: string;
+};
+
 export type Env = {
   [key: string]: DataType | Env | null;
 };
@@ -59,8 +63,8 @@ export type ComposeOptions = {
 };
 
 export type ComposeOutput = {
-  error?: Error;
-  rawEnv?: Env;
+  rawEnv?: RawEnv;
+  convertedEnv?: Env;
   env?: Env;
 };
 
