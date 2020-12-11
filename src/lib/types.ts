@@ -18,7 +18,7 @@ export type DataType = string | string[] | number | number[] | boolean | boolean
 export type DataTypeOption = 'string' | 'string[]' | 'number' | 'number[]' | 'boolean' | 'boolean[]' | 'json';
 
 export type RawEnv = {
-  [key: string]: string;
+  [key: string]: string | undefined;
 };
 
 export type Env = {
