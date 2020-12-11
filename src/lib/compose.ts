@@ -51,44 +51,40 @@ export const compose = (
     },
   };
 
-  try {
-    checkVariables(dotenvParsed, tmplParsed, opts);
+  checkVariables(dotenvParsed, tmplParsed, opts);
 
-    const rawEnv = opts.unknownVariables === 'remove' ? {} : Object.assign({}, dotenvParsed);
+  const rawEnv = opts.unknownVariables === 'remove' ? {} : Object.assign({}, dotenvParsed);
 
-    for (const key in tmplParsed) {
-      const annotation = tmplParsed[key];
-      let val: any = dotenvParsed[key];
+  for (const key in tmplParsed) {
+    const annotation = tmplParsed[key];
+    let val: any = dotenvParsed[key];
 
-      if (!annotation.required && (val == null || val === '')) {
-        val = annotation.defaultValue ?? null;
-      } else {
-        if (annotation.types) {
-          val = convert(val, annotation.types);
-        }
-      }
-
-      rawEnv[key] = val;
-    }
-
-    let env = {};
-    if (opts.rename.enabled) {
-      for (const key in rawEnv) {
-        let keyPath: string | string[] | undefined = tmplParsed[key]?.name;
-        if (!keyPath) {
-          keyPath = opts.rename.nestingDelimiter ? key.split(opts.rename.nestingDelimiter).filter((k) => k) : [key];
-          keyPath = keyPath.map((k) => toCase(k, opts.rename.caseStyle));
-        }
-        set(env, keyPath, rawEnv[key]);
-      }
+    if (!annotation.required && (val == null || val === '')) {
+      val = annotation.defaultValue ?? null;
     } else {
-      env = rawEnv;
+      if (annotation.types) {
+        val = convert(val, annotation.types);
+      }
     }
 
-    return { rawEnv, env };
-  } catch (error) {
-    return { error };
+    rawEnv[key] = val;
   }
+
+  let env = {};
+  if (opts.rename.enabled) {
+    for (const key in rawEnv) {
+      let keyPath: string | string[] | undefined = tmplParsed[key]?.name;
+      if (!keyPath) {
+        keyPath = opts.rename.nestingDelimiter ? key.split(opts.rename.nestingDelimiter).filter((k) => k) : [key];
+        keyPath = keyPath.map((k) => toCase(k, opts.rename.caseStyle));
+      }
+      set(env, keyPath, rawEnv[key]);
+    }
+  } else {
+    env = rawEnv;
+  }
+
+  return { rawEnv, env };
 };
 
 export default compose;

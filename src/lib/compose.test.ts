@@ -66,8 +66,7 @@ describe('lib/compose', () => {
       UNKNOWN_VARIABLE: '--- unchanged --',
     };
 
-    const { error, rawEnv, env } = compose(testDotenvParsed, testTmplParsed);
-    expect(error).toBeUndefined();
+    const { rawEnv, env } = compose(testDotenvParsed, testTmplParsed);
     expect(rawEnv).toStrictEqual(expectedRawEnv);
     expect(env).toStrictEqual(expectedRawEnv);
   });
@@ -101,8 +100,7 @@ describe('lib/compose', () => {
       UNKNOWN_VARIABLE: '--- unchanged --',
     };
 
-    const { error, rawEnv, env } = compose(testDotenvParsed, testTmplParsed);
-    expect(error).toBeUndefined();
+    const { rawEnv, env } = compose(testDotenvParsed, testTmplParsed);
     expect(rawEnv).toStrictEqual(expectedRawEnv);
     expect(env).toStrictEqual(expectedRawEnv);
   });
@@ -136,8 +134,7 @@ describe('lib/compose', () => {
       // [should be removed] UNKNOWN_VARIABLE: '--- unchanged --',
     };
 
-    const { error, rawEnv, env } = compose(testDotenvParsed, testTmplParsed, { unknownVariables: 'remove' });
-    expect(error).toBeUndefined();
+    const { rawEnv, env } = compose(testDotenvParsed, testTmplParsed, { unknownVariables: 'remove' });
     expect(rawEnv).toStrictEqual(expectedRawEnv);
     expect(env).toStrictEqual(expectedRawEnv);
   });
@@ -150,8 +147,8 @@ describe('lib/compose', () => {
       UNKNOWN_VARIABLE: '--- unchanged --',
     };
 
-    const { error } = compose(testDotenvParsed, testTmplParsed, { unknownVariables: 'error' });
-    expect(error?.message).toContain('Unknown variables are not allowed');
+    const throwError = () => compose(testDotenvParsed, testTmplParsed, { unknownVariables: 'error' });
+    expect(throwError).toThrow('Unknown variables are not allowed');
   });
 
   it('rename the variables, using default rename options', () => {
@@ -208,8 +205,7 @@ describe('lib/compose', () => {
       unknownVariable: '--- unchanged --',
     };
 
-    const { error, rawEnv, env } = compose(testDotenvParsed, testTmplParsed, { rename: { enabled: true } });
-    expect(error).toBeUndefined();
+    const { rawEnv, env } = compose(testDotenvParsed, testTmplParsed, { rename: { enabled: true } });
     expect(rawEnv).toStrictEqual(expectedRawEnv);
     expect(env).toStrictEqual(expectedEnv);
   });
@@ -268,8 +264,7 @@ describe('lib/compose', () => {
       unknown_variable: '--- unchanged --',
     };
 
-    const { error, rawEnv, env } = compose(testDotenvParsed, testTmplParsed, { rename: { caseStyle: 'snake_case' } });
-    expect(error).toBeUndefined();
+    const { rawEnv, env } = compose(testDotenvParsed, testTmplParsed, { rename: { caseStyle: 'snake_case' } });
     expect(rawEnv).toStrictEqual(expectedRawEnv);
     expect(env).toStrictEqual(expectedEnv);
   });
@@ -353,8 +348,7 @@ describe('lib/compose', () => {
       },
     };
 
-    const { error, rawEnv, env } = compose(testDotenvParsed, testTmplParsed, { rename: { nestingDelimiter: '_' } });
-    expect(error).toBeUndefined();
+    const { rawEnv, env } = compose(testDotenvParsed, testTmplParsed, { rename: { nestingDelimiter: '_' } });
     expect(rawEnv).toStrictEqual(expectedRawEnv);
     expect(env).toStrictEqual(expectedEnv);
   });
@@ -364,8 +358,8 @@ describe('lib/compose', () => {
       REQUIRED__WITHOUT_NAME: '-- unchanged --',
     };
 
-    const { error } = compose(testDotenvParsed, testTmplParsed);
-    expect(error?.message).toContain('Some required variables are missing');
+    const throwError = () => compose(testDotenvParsed, testTmplParsed);
+    expect(throwError).toThrow('Some required variables are missing');
   });
 
   it('bubble up the ConvertError when a variable value cannot be converted to the specified data type(s)', () => {
@@ -378,7 +372,7 @@ describe('lib/compose', () => {
       OPTIONAL__INTEGER: '-- unchanged --',
     };
 
-    const { error } = compose(testDotenvParsed, testTmplParsed);
-    expect(error).toBeInstanceOf(Convert.ConvertError);
+    const throwError = () => compose(testDotenvParsed, testTmplParsed);
+    expect(throwError).toThrow(Convert.ConvertError);
   });
 });

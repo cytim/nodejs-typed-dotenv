@@ -50,18 +50,19 @@ export const config = (options?: ConfigOptions): ConfigOutput => {
     return { error: dotenvConfigOutput.error };
   }
 
-  const composeOutput = compose(
-    dotenvConfigOutput.parsed as DotenvParseOutput,
-    tmplConfigOutput.parsed as TemplateParseOutput,
-    options as ComposeOptions
-  );
-  if (composeOutput.error) {
-    return { error: composeOutput.error };
+  try {
+    const composed = compose(
+      dotenvConfigOutput.parsed as DotenvParseOutput,
+      tmplConfigOutput.parsed as TemplateParseOutput,
+      options as ComposeOptions
+    );
+
+    // TODO: Setup process.env
+
+    return { env: composed.env, template: tmplConfigOutput.parsed };
+  } catch (error) {
+    return { error };
   }
-
-  // TODO: Setup process.env
-
-  return { env: composeOutput.env, template: tmplConfigOutput.parsed };
 };
 
 export default config;
