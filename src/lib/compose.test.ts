@@ -2,10 +2,10 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { SinonStub, stub } from 'sinon';
 import * as Convert from './convert';
-import { proofread } from './proofread';
+import { compose } from './compose';
 import { TemplateParseOutput } from './types';
 
-describe('lib/proofread', () => {
+describe('lib/compose', () => {
   let convertStub: SinonStub, testTmplParsed: TemplateParseOutput;
 
   beforeAll(() => {
@@ -66,7 +66,7 @@ describe('lib/proofread', () => {
       UNKNOWN_VARIABLE: '--- unchanged --',
     };
 
-    const { error, rawEnv, env } = proofread(testDotenvParsed, testTmplParsed);
+    const { error, rawEnv, env } = compose(testDotenvParsed, testTmplParsed);
     expect(error).toBeUndefined();
     expect(rawEnv).toStrictEqual(expectedRawEnv);
     expect(env).toStrictEqual(expectedRawEnv);
@@ -101,7 +101,7 @@ describe('lib/proofread', () => {
       UNKNOWN_VARIABLE: '--- unchanged --',
     };
 
-    const { error, rawEnv, env } = proofread(testDotenvParsed, testTmplParsed);
+    const { error, rawEnv, env } = compose(testDotenvParsed, testTmplParsed);
     expect(error).toBeUndefined();
     expect(rawEnv).toStrictEqual(expectedRawEnv);
     expect(env).toStrictEqual(expectedRawEnv);
@@ -136,7 +136,7 @@ describe('lib/proofread', () => {
       // [should be removed] UNKNOWN_VARIABLE: '--- unchanged --',
     };
 
-    const { error, rawEnv, env } = proofread(testDotenvParsed, testTmplParsed, { unknownVariables: 'remove' });
+    const { error, rawEnv, env } = compose(testDotenvParsed, testTmplParsed, { unknownVariables: 'remove' });
     expect(error).toBeUndefined();
     expect(rawEnv).toStrictEqual(expectedRawEnv);
     expect(env).toStrictEqual(expectedRawEnv);
@@ -150,7 +150,7 @@ describe('lib/proofread', () => {
       UNKNOWN_VARIABLE: '--- unchanged --',
     };
 
-    const { error } = proofread(testDotenvParsed, testTmplParsed, { unknownVariables: 'error' });
+    const { error } = compose(testDotenvParsed, testTmplParsed, { unknownVariables: 'error' });
     expect(error?.message).toContain('Unknown variables are not allowed');
   });
 
@@ -208,7 +208,7 @@ describe('lib/proofread', () => {
       unknownVariable: '--- unchanged --',
     };
 
-    const { error, rawEnv, env } = proofread(testDotenvParsed, testTmplParsed, { rename: { enabled: true } });
+    const { error, rawEnv, env } = compose(testDotenvParsed, testTmplParsed, { rename: { enabled: true } });
     expect(error).toBeUndefined();
     expect(rawEnv).toStrictEqual(expectedRawEnv);
     expect(env).toStrictEqual(expectedEnv);
@@ -268,7 +268,7 @@ describe('lib/proofread', () => {
       unknown_variable: '--- unchanged --',
     };
 
-    const { error, rawEnv, env } = proofread(testDotenvParsed, testTmplParsed, { rename: { caseStyle: 'snake_case' } });
+    const { error, rawEnv, env } = compose(testDotenvParsed, testTmplParsed, { rename: { caseStyle: 'snake_case' } });
     expect(error).toBeUndefined();
     expect(rawEnv).toStrictEqual(expectedRawEnv);
     expect(env).toStrictEqual(expectedEnv);
@@ -353,7 +353,7 @@ describe('lib/proofread', () => {
       },
     };
 
-    const { error, rawEnv, env } = proofread(testDotenvParsed, testTmplParsed, { rename: { nestingDelimiter: '_' } });
+    const { error, rawEnv, env } = compose(testDotenvParsed, testTmplParsed, { rename: { nestingDelimiter: '_' } });
     expect(error).toBeUndefined();
     expect(rawEnv).toStrictEqual(expectedRawEnv);
     expect(env).toStrictEqual(expectedEnv);
@@ -364,7 +364,7 @@ describe('lib/proofread', () => {
       REQUIRED__WITHOUT_NAME: '-- unchanged --',
     };
 
-    const { error } = proofread(testDotenvParsed, testTmplParsed);
+    const { error } = compose(testDotenvParsed, testTmplParsed);
     expect(error?.message).toContain('Some required variables are missing');
   });
 
@@ -378,7 +378,7 @@ describe('lib/proofread', () => {
       OPTIONAL__INTEGER: '-- unchanged --',
     };
 
-    const { error } = proofread(testDotenvParsed, testTmplParsed);
+    const { error } = compose(testDotenvParsed, testTmplParsed);
     expect(error).toBeInstanceOf(Convert.ConvertError);
   });
 });

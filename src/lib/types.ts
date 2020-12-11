@@ -48,7 +48,7 @@ export type TemplateConfigOutput = {
   error?: Error;
 };
 
-export type ProofreadOptions = {
+export type ComposeOptions = {
   unknownVariables?: 'keep' | 'remove' | 'error';
   rename?: {
     enabled?: boolean;
@@ -57,9 +57,15 @@ export type ProofreadOptions = {
   };
 };
 
+export type ComposeOutput = {
+  error?: Error;
+  rawEnv?: Env;
+  env?: Env;
+};
+
 export type ConfigOptions = {
   template?: TemplateConfigOptions;
-} & ProofreadOptions &
+} & ComposeOptions &
   DotenvConfigOptions;
 
 export type ConfigOutput = {

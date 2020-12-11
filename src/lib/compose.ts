@@ -1,7 +1,7 @@
 import { set, camelCase, snakeCase } from 'lodash';
 import { DotenvParseOutput } from 'dotenv/types';
 import { convert } from './convert';
-import { Env, ProofreadOptions, TemplateParseOutput } from './types';
+import { ComposeOptions, ComposeOutput, TemplateParseOutput } from './types';
 
 const toCase = (str: string, caseStyle: 'camelCase' | 'snake_case') => {
   switch (caseStyle) {
@@ -37,11 +37,11 @@ const checkVariables = (
   }
 };
 
-export const proofread = (
+export const compose = (
   dotenvParsed: DotenvParseOutput,
   tmplParsed: TemplateParseOutput,
-  options?: ProofreadOptions
-): { rawEnv?: Env; env?: Env; error?: Error } => {
+  options?: ComposeOptions
+): ComposeOutput => {
   const opts = {
     unknownVariables: options?.unknownVariables ?? 'keep',
     rename: {
@@ -91,4 +91,4 @@ export const proofread = (
   }
 };
 
-export default proofread;
+export default compose;
