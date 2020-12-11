@@ -69,6 +69,7 @@ export type ComposeOutput = {
 };
 
 export type ConfigOptions = {
+  assignToProcessEnv?: boolean;
   template?: TemplateConfigOptions;
 } & ComposeOptions &
   DotenvConfigOptions;

@@ -24,6 +24,8 @@ const configDotenv = (options: DotenvConfigOptions): DotenvConfigOutput => {
 
 export const config = (options?: ConfigOptions): ConfigOutput => {
   const debug = options?.debug ?? false;
+  const assignToProcessEnv = options?.assignToProcessEnv ?? true;
+
   if (debug) {
     log('options: %j', options);
   }
@@ -51,15 +53,24 @@ export const config = (options?: ConfigOptions): ConfigOutput => {
   }
 
   try {
-    const composed = compose(
+    const { rawEnv, env } = compose(
       dotenvConfigOutput.parsed as DotenvParseOutput,
       tmplConfigOutput.parsed as TemplateParseOutput,
       options as ComposeOptions
     );
 
-    // TODO: Setup process.env
+    // Setup process.env
+    if (assignToProcessEnv) {
+      for (const key in rawEnv) {
+        if (!(key in process.env)) {
+          process.env[key] = rawEnv[key];
+        } else {
+          debug && log(`"${key}" is already defined in \`process.env\` and will not be overwritten`);
+        }
+      }
+    }
 
-    return { env: composed.env, template: tmplConfigOutput.parsed };
+    return { env, template: tmplConfigOutput.parsed };
   } catch (error) {
     return { error };
   }
