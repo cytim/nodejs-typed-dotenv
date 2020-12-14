@@ -69,6 +69,7 @@ export type ComposeOutput = {
 };
 
 export type ConfigOptions = {
+  includeProcessEnv?: boolean;
   assignToProcessEnv?: boolean;
   template?: TemplateConfigOptions;
 } & ComposeOptions &
