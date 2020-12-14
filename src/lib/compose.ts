@@ -3,7 +3,7 @@ import { DotenvParseOutput } from 'dotenv/types';
 import { convert } from './convert';
 import { ComposeOptions, ComposeOutput, TemplateParseOutput } from './types';
 
-const toCase = (str: string, caseStyle: 'camelCase' | 'snake_case') => {
+const toCase = (str: string, caseStyle: 'camelCase' | 'snake_case' | null) => {
   switch (caseStyle) {
     case 'camelCase':
       return camelCase(str);

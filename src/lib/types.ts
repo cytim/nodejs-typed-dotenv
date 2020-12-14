@@ -57,7 +57,7 @@ export type ComposeOptions = {
   unknownVariables?: 'keep' | 'remove' | 'error';
   rename?: {
     enabled?: boolean;
-    caseStyle?: 'camelCase' | 'snake_case';
+    caseStyle?: 'camelCase' | 'snake_case' | null;
     nestingDelimiter?: string | null;
   };
 };
