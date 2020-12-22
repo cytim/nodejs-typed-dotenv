@@ -452,7 +452,7 @@ The following code WON'T load the environment variables for the `foo` module bec
 the `foo` module.
 
 ```js
-import typedDotenv from 'typed-dotenv';
+import * as typedDotenv from 'typed-dotenv';
 import foo from './foo';
 
 typedDotenv.config();
@@ -475,7 +475,7 @@ importing `typed-dotenv/dist/config` instead of `typed-dotenv`.
  * 1. Setup `config.ts`
  * * * * * * * * * */
 
-import typedDotenv from 'typed-dotenv';
+import * as typedDotenv from 'typed-dotenv';
 
 const { error, env } = typedDotenv.config({
   // ...options
