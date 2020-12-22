@@ -1,7 +1,9 @@
+import { DataTypeOption } from './types';
+
 const RE_ARRAY_DELIMITER = /\s*,\s*/;
 
 const strTo = {
-  array: (data: string, type: 'string' | 'number' | 'boolean') => {
+  array: (data: string, type: 'string' | 'number' | 'boolean' | 'Date') => {
     const arr = data.split(RE_ARRAY_DELIMITER);
     try {
       let output = [];
@@ -35,6 +37,14 @@ const strTo = {
     throw new ConvertError('Failed to convert the data into boolean');
   },
 
+  Date: (data: string) => {
+    const output = new Date(data);
+    if (!Number.isNaN(output.getTime())) {
+      return output;
+    }
+    throw new ConvertError('Failed to convert the data into Date');
+  },
+
   json: (data: string) => {
     try {
       const output = JSON.parse(data);
@@ -55,18 +65,15 @@ export class ConvertError extends Error {
   }
 }
 
-export const convert = (
-  data: string,
-  types: ('string' | 'string[]' | 'number' | 'number[]' | 'boolean' | 'boolean[]' | 'json')[]
-): any => {
+export const convert = (data: string, types: DataTypeOption[]): any => {
   for (const type of types) {
     try {
       let output;
       if (type.endsWith('[]')) {
-        const primitiveType = type.slice(0, -2) as 'string' | 'number' | 'boolean';
+        const primitiveType = type.slice(0, -2) as 'string' | 'number' | 'boolean' | 'Date';
         output = strTo.array(data, primitiveType);
       } else {
-        output = strTo[type as 'string' | 'number' | 'boolean' | 'json'](data);
+        output = strTo[type as 'string' | 'number' | 'boolean' | 'Date' | 'json'](data);
       }
       return output;
     } catch (e) {
