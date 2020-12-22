@@ -88,24 +88,29 @@ describe('lib/convert', () => {
 
   describe('Successful cases (convert into multiple target types)', () => {
     it('convert to the first convertable type (string)', () => {
-      const output = convert('I am a string', ['number', 'Date', 'boolean', 'string']);
+      const output = convert('I am a string', ['json', 'number', 'Date', 'boolean', 'string']);
       expect(output).toStrictEqual('I am a string');
     });
 
     it('convert to the first convertable type (boolean)', () => {
-      const output = convert('true', ['number', 'Date', 'boolean', 'string']);
+      const output = convert('true', ['json', 'number', 'Date', 'boolean', 'string']);
       expect(output).toStrictEqual(true);
     });
 
     it('convert to the first convertable type (number)', () => {
-      const output = convert('3.14', ['number', 'Date', 'boolean', 'string']);
+      const output = convert('3.14', ['json', 'number', 'Date', 'boolean', 'string']);
       expect(output).toStrictEqual(3.14);
     });
 
     it('convert to the first convertable type (Date)', () => {
-      const output = convert('2020-01-01', ['number', 'Date', 'boolean', 'string']);
+      const output = convert('2020-01-01', ['json', 'number', 'Date', 'boolean', 'string']);
       expect(output).toBeInstanceOf(Date);
       expect(output.getTime()).toStrictEqual(new Date('2020-01-01').getTime());
+    });
+
+    it('convert to the first convertable type (json)', () => {
+      const output = convert('{"foo":"bar"}', ['json', 'number', 'Date', 'boolean', 'string']);
+      expect(output).toStrictEqual({ foo: 'bar' });
     });
 
     it('convert to the first convertable type (string[])', () => {
@@ -147,6 +152,11 @@ describe('lib/convert', () => {
 
     it('fail to convert non-date to Date', () => {
       const convertWithError = () => convert('anything', ['Date']);
+      expect(convertWithError).toThrow(ConvertError);
+    });
+
+    it('fail to convert non-json to json', () => {
+      const convertWithError = () => convert('999', ['json']);
       expect(convertWithError).toThrow(ConvertError);
     });
 
