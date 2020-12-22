@@ -229,6 +229,7 @@ const { error, env } = require('typed-dotenv').config({
   debug: false,
   path: '.env',
   encoding: 'utf8',
+  errorOnFileNotFound: false,
   unknownVariables: 'keep',
   assignToProcessEnv: true,
   includeProcessEnv: false,
@@ -236,6 +237,7 @@ const { error, env } = require('typed-dotenv').config({
     debug: false,
     path: '.env.template',
     encoding: 'utf8',
+    errorOnFileNotFound: false,
     errorOnMissingAnnotation: false,
   },
   rename: {
@@ -257,6 +259,10 @@ The path to your `.env` file.
 #### options.encoding _(default: `'utf8'`)_
 
 The encoding of your `.env` file.
+
+#### options.errorOnFileNotFound _(default: `false`)_
+
+Set to `true` to throw an error when the `.env` file does not exist.
 
 #### options.unknownVariables _(default: `'keep'`)_
 
@@ -290,6 +296,10 @@ The path to your `.env.template` file.
 #### options.template.encoding _(default: `'utf8'`)_
 
 The encoding of your `.env.template` file.
+
+#### options.template.errorOnFileNotFound _(default: `false`)_
+
+Set to `true` to throw an error when the `.env.template` file does not exist.
 
 #### options.template.errorOnMissingAnnotation _(default: `false`)_
 
@@ -380,6 +390,7 @@ const { error, parsed } = require('typed-dotenv').template.config({
   debug: false,
   path: '.env.template',
   encoding: 'utf8',
+  errorOnFileNotFound: false,
   errorOnMissingAnnotation: false,
 });
 ```

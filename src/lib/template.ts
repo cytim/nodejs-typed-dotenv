@@ -162,12 +162,16 @@ export const config = (options?: TemplateConfigOptions): TemplateConfigOutput =>
   const path = options?.path ?? resolve(process.cwd(), '.env.template');
   const encoding = options?.encoding ?? 'utf8';
   const debug = options?.debug ?? false;
+  const errorOnFileNotFound = options?.errorOnFileNotFound ?? false;
   const errorOnMissingAnnotation = options?.errorOnMissingAnnotation ?? false;
 
   try {
     const parsed = parse(readFileSync(path, { encoding }), { debug, errorOnMissingAnnotation });
     return { parsed };
   } catch (error) {
+    if (error.code === 'ENOENT' && !errorOnFileNotFound) {
+      return { parsed: {} };
+    }
     return { error };
   }
 };
