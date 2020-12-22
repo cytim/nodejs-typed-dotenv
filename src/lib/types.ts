@@ -13,9 +13,18 @@ export type Encoding =
   | 'hex'
   | null;
 
-export type DataType = string | string[] | number | number[] | boolean | boolean[];
+export type DataType = string | string[] | number | number[] | boolean | boolean[] | Date | Date[];
 
-export type DataTypeOption = 'string' | 'string[]' | 'number' | 'number[]' | 'boolean' | 'boolean[]' | 'json';
+export type DataTypeOption =
+  | 'string'
+  | 'string[]'
+  | 'number'
+  | 'number[]'
+  | 'boolean'
+  | 'boolean[]'
+  | 'Date'
+  | 'Date[]'
+  | 'json';
 
 export type RawEnv = {
   [key: string]: string | undefined;
