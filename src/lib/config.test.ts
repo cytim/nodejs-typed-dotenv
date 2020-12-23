@@ -55,9 +55,53 @@ describe('lib/config', () => {
     });
   });
 
-  it('compose the env, and setup process.env', () => {
+  it('compose the env { assignToProcessEnv: true, includeProcessEnv: true }', () => {
+    const _testComposeOutputRawEnv = { A: '999', B: 'true' };
+    const _testComposeOutputEnv = { A: 999, B: true };
     process.env.A = '';
+    composeStub.returns({
+      rawEnv: _testComposeOutputRawEnv,
+      convertedEnv: _testComposeOutputEnv,
+      env: _testComposeOutputEnv,
+    });
     const { error, template, env } = config();
+
+    // Expect that `config()` merges `process.env` into `dotenv.parsed`
+    expect(dotenvParseStub.getCall(0).returnValue).toStrictEqual({ A: '777', B: 'true' });
+    expect(composeStub.getCall(0).args[0]).toStrictEqual({ A: '', B: 'true' });
+
+    expect(error).toBeUndefined();
+    expect(template).toStrictEqual(testConfigOutputTmpl);
+    expect(env).toStrictEqual(_testComposeOutputEnv);
+    expect(process.env).toStrictEqual(_testComposeOutputRawEnv);
+    expect(logStub.called).toBe(false);
+  });
+
+  it('compose the env { assignToProcessEnv: false, includeProcessEnv: true }', () => {
+    const _testComposeOutputRawEnv = { A: '999', B: 'true' };
+    const _testComposeOutputEnv = { A: 999, B: true };
+    process.env.A = '';
+    composeStub.returns({
+      rawEnv: _testComposeOutputRawEnv,
+      convertedEnv: _testComposeOutputEnv,
+      env: _testComposeOutputEnv,
+    });
+    const { error, template, env } = config({ assignToProcessEnv: false });
+
+    // Expect that `config()` merges `process.env` into `dotenv.parsed`
+    expect(dotenvParseStub.getCall(0).returnValue).toStrictEqual({ A: '777', B: 'true' });
+    expect(composeStub.getCall(0).args[0]).toStrictEqual({ A: '', B: 'true' });
+
+    expect(error).toBeUndefined();
+    expect(template).toStrictEqual(testConfigOutputTmpl);
+    expect(env).toStrictEqual(_testComposeOutputEnv);
+    expect(process.env).toStrictEqual({ A: '' }); // process.env is not overwritten
+    expect(logStub.called).toBe(false);
+  });
+
+  it('compose the env { assignToProcessEnv: true, includeProcessEnv: false }', () => {
+    process.env.A = '';
+    const { error, template, env } = config({ includeProcessEnv: false });
     expect(error).toBeUndefined();
     expect(template).toStrictEqual(testConfigOutputTmpl);
     expect(env).toStrictEqual(testConfigOutputEnv);
@@ -68,47 +112,13 @@ describe('lib/config', () => {
     expect(logStub.called).toBe(false);
   });
 
-  it('compose the env, but skip setting up process.env', () => {
+  it('compose the env { assignToProcessEnv: false, includeProcessEnv: false }', () => {
     process.env.A = '';
-    const { error, template, env } = config({ assignToProcessEnv: false });
+    const { error, template, env } = config({ assignToProcessEnv: false, includeProcessEnv: false });
     expect(error).toBeUndefined();
     expect(template).toStrictEqual(testConfigOutputTmpl);
     expect(env).toStrictEqual(testConfigOutputEnv);
-    expect(process.env).toStrictEqual({ A: '' });
-    expect(logStub.called).toBe(false);
-  });
-
-  it('include process.env to compose the env, and override process.env', () => {
-    const _testComposeOutputRawEnv = { A: '999', B: 'true' };
-    const _testComposeOutputEnv = { A: 999, B: true };
-    process.env.A = '';
-    composeStub.returns({
-      rawEnv: _testComposeOutputRawEnv,
-      convertedEnv: _testComposeOutputEnv,
-      env: _testComposeOutputEnv,
-    });
-    const { error, template, env } = config({ includeProcessEnv: true });
-    expect(error).toBeUndefined();
-    expect(template).toStrictEqual(testConfigOutputTmpl);
-    expect(env).toStrictEqual(_testComposeOutputEnv);
-    expect(process.env).toStrictEqual(_testComposeOutputRawEnv); // process.env.A is overwritten
-    expect(logStub.called).toBe(false);
-  });
-
-  it('include process.env to compose the env, but skip setting up process.env', () => {
-    const _testComposeOutputRawEnv = { A: '999', B: 'true' };
-    const _testComposeOutputEnv = { A: 999, B: true };
-    process.env.A = '';
-    composeStub.returns({
-      rawEnv: _testComposeOutputRawEnv,
-      convertedEnv: _testComposeOutputEnv,
-      env: _testComposeOutputEnv,
-    });
-    const { error, template, env } = config({ includeProcessEnv: true, assignToProcessEnv: false });
-    expect(error).toBeUndefined();
-    expect(template).toStrictEqual(testConfigOutputTmpl);
-    expect(env).toStrictEqual(_testComposeOutputEnv);
-    expect(process.env).toStrictEqual({ A: '' });
+    expect(process.env).toStrictEqual({ A: '' }); // process.env is not overwritten
     expect(logStub.called).toBe(false);
   });
 

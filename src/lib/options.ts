@@ -8,14 +8,18 @@ const OPTION_KEYS: { [key: string]: DataTypeOption[] } = {
   debug: ['boolean'],
   encoding: ['string'],
   path: ['string'],
-  remove_unknown_variables: ['boolean'],
+  error_on_file_not_found: ['boolean'],
+  unknown_variables: ['string'],
+  assign_to_process_env: ['boolean'],
+  include_process_env: ['boolean'],
   rename__enabled: ['boolean'],
   rename__case: ['string'],
   rename__nesting_delimiter: ['string'],
   template__debug: ['boolean'],
   template__encoding: ['string'],
   template__path: ['string'],
-  template__throw_missing_annotation: ['boolean'],
+  template__error_on_file_not_found: ['boolean'],
+  template__error_on_missing_annotation: ['boolean'],
 };
 
 const RE_CLI_KEY_VAL = new RegExp(`^${PREFIX}(${Object.keys(OPTION_KEYS).join('|')})=(.+)$`);

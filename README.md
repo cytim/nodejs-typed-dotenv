@@ -139,8 +139,8 @@ yarn add typed-dotenv
 1. `process.env` will be modified to include the loaded variables, **BUT** the assigned values are the RAW _STRING_
    values, because `process.env` accepts string only.
 
-2. If a variable has already been set in `process.env`, it will NOT be overwritten UNLESS `includeProcessEnv` is set to
-   `true`.
+2. If a variable has already been set in `process.env`, it WILL be overwritten UNLESS `includeProcessEnv` is set to
+   `false`.
 
 ## The .env.template File
 
@@ -229,19 +229,21 @@ const { error, env } = require('typed-dotenv').config({
   debug: false,
   path: '.env',
   encoding: 'utf8',
+  errorOnFileNotFound: false,
   unknownVariables: 'keep',
   assignToProcessEnv: true,
-  includeProcessEnv: false,
+  includeProcessEnv: true,
   template: {
     debug: false,
     path: '.env.template',
     encoding: 'utf8',
+    errorOnFileNotFound: false,
     errorOnMissingAnnotation: false,
   },
   rename: {
     enabled: false,
     caseStyle: 'camelCase',
-    nestingDelimiter: '__';
+    nestingDelimiter: '__',
   },
 });
 ```
@@ -258,6 +260,10 @@ The path to your `.env` file.
 
 The encoding of your `.env` file.
 
+#### options.errorOnFileNotFound _(default: `false`)_
+
+Set to `true` to throw an error when the `.env` file does not exist.
+
 #### options.unknownVariables _(default: `'keep'`)_
 
 The behaviour to handle a variable if it does not exist in `.env.template` but is found in `.env`.
@@ -273,10 +279,10 @@ Set to `true` to assign the loaded variables to `process.env`.
 1. The RAW _STRING_ values, instead of the converted values, are assigned to `process.env`, because `process.env`
    accepts string only.
 
-2. If a variable has already been set in `process.env`, it will NOT be overwritten UNLESS `includeProcessEnv` is set to
-   `true`.
+2. If a variable has already been set in `process.env`, it WILL be overwritten UNLESS `includeProcessEnv` is set to
+   `false`.
 
-#### options.includeProcessEnv _(default: `false`)_
+#### options.includeProcessEnv _(default: `true`)_
 
 Set to `true` to include `process.env` to load the variables. The variables in `process.env` overrides the variables in
 `.env`.
@@ -290,6 +296,10 @@ The path to your `.env.template` file.
 #### options.template.encoding _(default: `'utf8'`)_
 
 The encoding of your `.env.template` file.
+
+#### options.template.errorOnFileNotFound _(default: `false`)_
+
+Set to `true` to throw an error when the `.env.template` file does not exist.
 
 #### options.template.errorOnMissingAnnotation _(default: `false`)_
 
@@ -380,6 +390,7 @@ const { error, parsed } = require('typed-dotenv').template.config({
   debug: false,
   path: '.env.template',
   encoding: 'utf8',
+  errorOnFileNotFound: false,
   errorOnMissingAnnotation: false,
 });
 ```
@@ -441,7 +452,7 @@ The following code WON'T load the environment variables for the `foo` module bec
 the `foo` module.
 
 ```js
-import typedDotenv from 'typed-dotenv';
+import * as typedDotenv from 'typed-dotenv';
 import foo from './foo';
 
 typedDotenv.config();
@@ -464,7 +475,7 @@ importing `typed-dotenv/dist/config` instead of `typed-dotenv`.
  * 1. Setup `config.ts`
  * * * * * * * * * */
 
-import typedDotenv from 'typed-dotenv';
+import * as typedDotenv from 'typed-dotenv';
 
 const { error, env } = typedDotenv.config({
   // ...options

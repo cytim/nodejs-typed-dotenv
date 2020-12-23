@@ -9,22 +9,26 @@ import { ConfigOptions, ConfigOutput, Encoding, ComposeOptions, TemplateParseOut
 /**
  * Override `dotenv.config` to by-pass the `process.env` assignment.
  */
-const configDotenv = (options: DotenvConfigOptions): DotenvConfigOutput => {
+const configDotenv = (options?: DotenvConfigOptions & { errorOnFileNotFound?: boolean }): DotenvConfigOutput => {
   const path = options?.path ?? resolve(process.cwd(), '.env');
   const encoding = (options?.encoding ?? 'utf8') as Encoding;
   const debug = options?.debug ?? false;
+  const errorOnFileNotFound = options?.errorOnFileNotFound ?? false;
 
   try {
     const parsed = dotenvParse(readFileSync(path, { encoding }), { debug });
     return { parsed };
   } catch (error) {
+    if (error.code === 'ENOENT' && !errorOnFileNotFound) {
+      return { parsed: {} };
+    }
     return { error };
   }
 };
 
 export const config = (options?: ConfigOptions): ConfigOutput => {
   const debug = options?.debug ?? false;
-  const includeProcessEnv = options?.includeProcessEnv ?? false;
+  const includeProcessEnv = options?.includeProcessEnv ?? true;
   const assignToProcessEnv = options?.assignToProcessEnv ?? true;
 
   if (debug) {
@@ -35,6 +39,7 @@ export const config = (options?: ConfigOptions): ConfigOutput => {
     Object.assign(
       {
         encoding: options?.encoding,
+        errorOnFileNotFound: options?.errorOnFileNotFound,
         debug: options?.debug,
       },
       options?.template

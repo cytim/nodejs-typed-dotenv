@@ -54,6 +54,7 @@ export type TemplateParseOutput = {
 export type TemplateConfigOptions = {
   path?: string;
   encoding?: Encoding;
+  errorOnFileNotFound?: boolean;
   debug?: boolean;
 } & TemplateParseOptions;
 
@@ -78,6 +79,7 @@ export type ComposeOutput = {
 };
 
 export type ConfigOptions = {
+  errorOnFileNotFound?: boolean;
   includeProcessEnv?: boolean;
   assignToProcessEnv?: boolean;
   template?: TemplateConfigOptions;

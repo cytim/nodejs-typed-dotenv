@@ -133,14 +133,21 @@ FOO=
       expect(parsed).toStrictEqual(testTmplParsed);
     });
 
-    it('config the template, with errorOnMissingAnnotation set to true', () => {
+    it('throw error because there is missing annotation and errorOnMissingAnnotation is true', () => {
       const { error } = config({ errorOnMissingAnnotation: true });
       expect(error?.message).toContain('No annotation is found for variable');
     });
 
+    it('return an empty parsed template, if the template file does not exist', () => {
+      readFileSyncStub.restore();
+      const { error, parsed } = config({ path: '/random/unknown/path/.env.template' });
+      expect(error).toBeUndefined();
+      expect(parsed).toStrictEqual({});
+    });
+
     it('throw error because the template path does not exist', () => {
       readFileSyncStub.restore();
-      const { error } = config({ path: '/random/unknown/path/.env.template' });
+      const { error } = config({ path: '/random/unknown/path/.env.template', errorOnFileNotFound: true });
       expect(error?.message).toContain('no such file or directory');
     });
   });
