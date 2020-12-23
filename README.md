@@ -243,7 +243,7 @@ const { error, env } = require('typed-dotenv').config({
   rename: {
     enabled: false,
     caseStyle: 'camelCase',
-    nestingDelimiter: '__';
+    nestingDelimiter: '__',
   },
 });
 ```
