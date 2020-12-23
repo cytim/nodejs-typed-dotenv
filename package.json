@@ -12,7 +12,8 @@
   ],
   "scripts": {
     "test": "jest",
-    "build": "mkdir -p dist && rm -rf dist/* && tsc"
+    "build": "mkdir -p dist && rm -rf dist/* && tsc",
+    "prepack": "npm run build"
   },
   "repository": {
     "type": "git",
