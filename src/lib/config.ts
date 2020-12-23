@@ -28,7 +28,7 @@ const configDotenv = (options?: DotenvConfigOptions & { errorOnFileNotFound?: bo
 
 export const config = (options?: ConfigOptions): ConfigOutput => {
   const debug = options?.debug ?? false;
-  const includeProcessEnv = options?.includeProcessEnv ?? false;
+  const includeProcessEnv = options?.includeProcessEnv ?? true;
   const assignToProcessEnv = options?.assignToProcessEnv ?? true;
 
   if (debug) {

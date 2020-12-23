@@ -139,8 +139,8 @@ yarn add typed-dotenv
 1. `process.env` will be modified to include the loaded variables, **BUT** the assigned values are the RAW _STRING_
    values, because `process.env` accepts string only.
 
-2. If a variable has already been set in `process.env`, it will NOT be overwritten UNLESS `includeProcessEnv` is set to
-   `true`.
+2. If a variable has already been set in `process.env`, it WILL be overwritten UNLESS `includeProcessEnv` is set to
+   `false`.
 
 ## The .env.template File
 
@@ -232,7 +232,7 @@ const { error, env } = require('typed-dotenv').config({
   errorOnFileNotFound: false,
   unknownVariables: 'keep',
   assignToProcessEnv: true,
-  includeProcessEnv: false,
+  includeProcessEnv: true,
   template: {
     debug: false,
     path: '.env.template',
@@ -279,10 +279,10 @@ Set to `true` to assign the loaded variables to `process.env`.
 1. The RAW _STRING_ values, instead of the converted values, are assigned to `process.env`, because `process.env`
    accepts string only.
 
-2. If a variable has already been set in `process.env`, it will NOT be overwritten UNLESS `includeProcessEnv` is set to
-   `true`.
+2. If a variable has already been set in `process.env`, it WILL be overwritten UNLESS `includeProcessEnv` is set to
+   `false`.
 
-#### options.includeProcessEnv _(default: `false`)_
+#### options.includeProcessEnv _(default: `true`)_
 
 Set to `true` to include `process.env` to load the variables. The variables in `process.env` overrides the variables in
 `.env`.
