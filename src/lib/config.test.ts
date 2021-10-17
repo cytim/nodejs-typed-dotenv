@@ -1,107 +1,118 @@
-import fs from 'fs';
 import dotenv from 'dotenv';
-import * as template from './template';
+import { mocked } from 'ts-jest/utils';
+import * as Template from './template';
 import * as Compose from './compose';
 import { config } from './config';
-import { SinonStub, stub } from 'sinon';
 import { Env, RawEnv, TemplateParseOutput } from './types';
 
+jest.mock('fs');
+jest.mock('dotenv');
+jest.mock('./template');
+jest.mock('./compose');
+
+const dotenvMock = mocked(dotenv);
+const TemplateMock = mocked(Template);
+const ComposeMock = mocked(Compose);
+
 describe('lib/config', () => {
-  let processEnv: RawEnv,
-    testConfigOutputTmpl: TemplateParseOutput,
-    testConfigOutputEnv: Env,
-    logStub: SinonStub,
-    readFileSyncStub: SinonStub,
-    dotenvParseStub: SinonStub,
-    tmplConfigStub: SinonStub,
-    composeStub: SinonStub;
+  let processEnv: RawEnv, testConfigOutputTmpl: TemplateParseOutput, testConfigOutputEnv: Env;
 
   beforeAll(() => {
     processEnv = process.env;
-    logStub = stub(console, 'log');
-    readFileSyncStub = stub(fs, 'readFileSync');
+
+    jest.spyOn(console, 'log').mockImplementation(() => undefined);
+
     testConfigOutputTmpl = {
       A: { required: false, types: ['number'], defaultValue: 999, rawDefaultValue: '999' },
       B: { required: false, types: ['boolean'], defaultValue: false, rawDefaultValue: 'false' },
     };
+
     testConfigOutputEnv = { A: 777, B: true };
-    dotenvParseStub = stub(dotenv, 'parse');
-    tmplConfigStub = stub(template, 'config');
-    composeStub = stub(Compose, 'compose');
-  });
 
-  afterAll(() => {
-    process.env = processEnv;
-    logStub.restore();
-    readFileSyncStub.restore();
-    dotenvParseStub.restore();
-    tmplConfigStub.restore();
-    composeStub.restore();
-  });
-
-  beforeEach(() => {
-    process.env = {};
-    logStub.reset();
-    readFileSyncStub.reset();
-    dotenvParseStub.reset();
-    dotenvParseStub.returns({ A: '777', B: 'true' });
-    tmplConfigStub.reset();
-    tmplConfigStub.returns({ parsed: testConfigOutputTmpl });
-    composeStub.reset();
-    composeStub.returns({
+    dotenvMock.parse.mockReturnValue({ A: '777', B: 'true' });
+    TemplateMock.config.mockReturnValue({ parsed: testConfigOutputTmpl });
+    ComposeMock.compose.mockReturnValue({
       rawEnv: { A: '777', B: 'true' },
       convertedEnv: testConfigOutputEnv,
       env: testConfigOutputEnv,
     });
   });
 
+  afterAll(() => {
+    process.env = processEnv;
+  });
+
+  beforeEach(() => {
+    process.env = {};
+  });
+
   it('compose the env { assignToProcessEnv: true, includeProcessEnv: true }', () => {
     const _testComposeOutputRawEnv = { A: '999', B: 'true' };
     const _testComposeOutputEnv = { A: 999, B: true };
+
     process.env.A = '';
-    composeStub.returns({
+
+    ComposeMock.compose.mockReturnValueOnce({
       rawEnv: _testComposeOutputRawEnv,
       convertedEnv: _testComposeOutputEnv,
       env: _testComposeOutputEnv,
     });
+
     const { error, template, env } = config();
 
-    // Expect that `config()` merges `process.env` into `dotenv.parsed`
-    expect(dotenvParseStub.getCall(0).returnValue).toStrictEqual({ A: '777', B: 'true' });
-    expect(composeStub.getCall(0).args[0]).toStrictEqual({ A: '', B: 'true' });
+    // Expect that `process.env` is merged into `dotenv.parsed`
+    expect(dotenvMock.parse).toBeCalledTimes(1);
+    expect(ComposeMock.compose).toBeCalledTimes(1);
+    expect(ComposeMock.compose).nthCalledWith(1, { A: '', B: 'true' }, expect.anything(), undefined);
 
     expect(error).toBeUndefined();
     expect(template).toStrictEqual(testConfigOutputTmpl);
     expect(env).toStrictEqual(_testComposeOutputEnv);
     expect(process.env).toStrictEqual(_testComposeOutputRawEnv);
-    expect(logStub.called).toBe(false);
+
+    expect(console.log).not.toBeCalled();
   });
 
   it('compose the env { assignToProcessEnv: false, includeProcessEnv: true }', () => {
+    const _options = { assignToProcessEnv: false };
     const _testComposeOutputRawEnv = { A: '999', B: 'true' };
     const _testComposeOutputEnv = { A: 999, B: true };
+
     process.env.A = '';
-    composeStub.returns({
+
+    ComposeMock.compose.mockReturnValueOnce({
       rawEnv: _testComposeOutputRawEnv,
       convertedEnv: _testComposeOutputEnv,
       env: _testComposeOutputEnv,
     });
-    const { error, template, env } = config({ assignToProcessEnv: false });
 
-    // Expect that `config()` merges `process.env` into `dotenv.parsed`
-    expect(dotenvParseStub.getCall(0).returnValue).toStrictEqual({ A: '777', B: 'true' });
-    expect(composeStub.getCall(0).args[0]).toStrictEqual({ A: '', B: 'true' });
+    const { error, template, env } = config(_options);
+
+    // Expect that `process.env` is merged into `dotenv.parsed`
+    expect(dotenvMock.parse).toBeCalledTimes(1);
+    expect(ComposeMock.compose).toBeCalledTimes(1);
+    expect(ComposeMock.compose).nthCalledWith(1, { A: '', B: 'true' }, expect.anything(), _options);
 
     expect(error).toBeUndefined();
     expect(template).toStrictEqual(testConfigOutputTmpl);
     expect(env).toStrictEqual(_testComposeOutputEnv);
     expect(process.env).toStrictEqual({ A: '' }); // process.env is not overwritten
-    expect(logStub.called).toBe(false);
+
+    expect(console.log).not.toBeCalled();
   });
 
   it('compose the env { assignToProcessEnv: true, includeProcessEnv: false }', () => {
+    const _options = { includeProcessEnv: false };
+
     process.env.A = '';
-    const { error, template, env } = config({ includeProcessEnv: false });
+
+    const { error, template, env } = config(_options);
+
+    // Expect that `process.env` is NOT merged into `dotenv.parsed`
+    expect(dotenvMock.parse).toBeCalledTimes(1);
+    expect(ComposeMock.compose).toBeCalledTimes(1);
+    expect(ComposeMock.compose).nthCalledWith(1, { A: '777', B: 'true' }, expect.anything(), _options);
+
     expect(error).toBeUndefined();
     expect(template).toStrictEqual(testConfigOutputTmpl);
     expect(env).toStrictEqual(testConfigOutputEnv);
@@ -109,42 +120,67 @@ describe('lib/config', () => {
       A: '', // not overwritten
       B: 'true',
     });
-    expect(logStub.called).toBe(false);
+
+    expect(console.log).not.toBeCalled();
   });
 
   it('compose the env { assignToProcessEnv: false, includeProcessEnv: false }', () => {
+    const _options = { assignToProcessEnv: false, includeProcessEnv: false };
+
     process.env.A = '';
-    const { error, template, env } = config({ assignToProcessEnv: false, includeProcessEnv: false });
+
+    const { error, template, env } = config(_options);
+
+    // Expect that `process.env` is NOT merged into `dotenv.parsed`
+    expect(dotenvMock.parse).toBeCalledTimes(1);
+    expect(ComposeMock.compose).toBeCalledTimes(1);
+    expect(ComposeMock.compose).nthCalledWith(1, { A: '777', B: 'true' }, expect.anything(), _options);
+
     expect(error).toBeUndefined();
     expect(template).toStrictEqual(testConfigOutputTmpl);
     expect(env).toStrictEqual(testConfigOutputEnv);
     expect(process.env).toStrictEqual({ A: '' }); // process.env is not overwritten
-    expect(logStub.called).toBe(false);
+
+    expect(console.log).not.toBeCalled();
   });
 
   it('return error for template error', () => {
-    tmplConfigStub.returns({ error: new Error('mock template.config error') });
+    TemplateMock.config.mockReturnValueOnce({ error: new Error('mock template.config error') });
+
     const { error } = config();
+
     expect(error?.message).toContain('mock template.config error');
-    expect(logStub.called).toBe(false);
+
+    expect(console.log).not.toBeCalled();
   });
 
   it('return error for dotenv error', () => {
-    dotenvParseStub.throws(new Error('mock dotenv.parse error'));
+    dotenvMock.parse.mockImplementationOnce(() => {
+      throw new Error('mock dotenv.parse error');
+    });
+
     const { error } = config();
+
     expect(error?.message).toContain('mock dotenv.parse error');
-    expect(logStub.called).toBe(false);
+
+    expect(console.log).not.toBeCalled();
   });
 
   it('return error for compose error', () => {
-    composeStub.throws(new Error('mock compose error'));
+    ComposeMock.compose.mockImplementationOnce(() => {
+      throw new Error('mock compose error');
+    });
+
     const { error } = config();
+
     expect(error?.message).toContain('mock compose error');
-    expect(logStub.called).toBe(false);
+
+    expect(console.log).not.toBeCalled();
   });
 
   it('print the debug logs', () => {
     config({ debug: true });
-    expect(logStub.called).toBe(true);
+
+    expect(console.log).toBeCalled();
   });
 });

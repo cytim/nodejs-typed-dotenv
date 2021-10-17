@@ -1,20 +1,25 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { SinonStub, stub } from 'sinon';
+import { mocked } from 'ts-jest/utils';
 import * as Convert from './convert';
 import { compose } from './compose';
 import { Env, RawEnv, TemplateParseOutput } from './types';
 import { omit } from 'lodash';
 
+jest.mock('./convert');
+
+const ConvertMock = mocked(Convert);
+
 describe('lib/compose', () => {
-  let convertStub: SinonStub,
-    testTmplParsed: TemplateParseOutput,
+  let testTmplParsed: TemplateParseOutput,
     expectedRawEnvWithAllDefaults: RawEnv,
     expectedConvertedEnvWithAllDefaults: Env;
 
   beforeAll(() => {
-    convertStub = stub(Convert, 'convert');
+    ConvertMock.convert.mockReturnValue('[converted]');
+
     testTmplParsed = JSON.parse(readFileSync(resolve(__dirname, '../__test__/data/template.parsed.json')).toString());
+
     expectedRawEnvWithAllDefaults = {
       REQUIRED__WITHOUT_NAME: '--- unchanged ---',
       REQUIRED__WITH_NAME: '--- unchanged ---',
@@ -36,6 +41,7 @@ describe('lib/compose', () => {
       MISSING_ANNOTATION: '',
       UNKNOWN_VARIABLE: '--- unchanged ---',
     };
+
     expectedConvertedEnvWithAllDefaults = {
       REQUIRED__WITHOUT_NAME: '[converted]',
       REQUIRED__WITH_NAME: '[converted]',
@@ -57,15 +63,6 @@ describe('lib/compose', () => {
       MISSING_ANNOTATION: null,
       UNKNOWN_VARIABLE: '--- unchanged ---',
     };
-  });
-
-  afterAll(() => {
-    convertStub.restore();
-  });
-
-  beforeEach(() => {
-    convertStub.reset();
-    convertStub.returns('[converted]');
   });
 
   it('parse all the variables correctly', () => {
@@ -316,7 +313,9 @@ describe('lib/compose', () => {
   });
 
   it('bubble up the ConvertError when a variable value cannot be converted to the specified data type(s)', () => {
-    convertStub.throws(new Convert.ConvertError('Mock conversion error'));
+    ConvertMock.convert.mockImplementationOnce(() => {
+      throw new Convert.ConvertError('Mock conversion error');
+    });
 
     const testDotenvParsed = {
       REQUIRED__WITHOUT_NAME: '-- unchanged --',
