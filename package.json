@@ -1,6 +1,6 @@
 {
   "name": "typed-dotenv",
-  "version": "1.2.1",
+  "version": "10.0.0",
   "description": "Load .env which is annotated with type information.",
   "engines": {
     "node": ">=10.0.0"
