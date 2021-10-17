@@ -1,15 +1,20 @@
+/* Visit https://aka.ms/tsconfig.json to read more about this file */
 {
   "compilerOptions": {
-    "target": "ES2018",
+    /* Recommended: https://github.com/tsconfig/bases/blob/main/bases/node10.json */
+    "lib": ["es2018"],
     "module": "commonjs",
-    "declaration": true,
-    "outDir": "./dist",
+    "target": "es2018",
     "strict": true,
-    "noImplicitAny": true,
-    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+
+    /* Customised */
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "noUnusedLocals": true,
+    "useUnknownInCatchVariables": false
   },
   "include": ["src/**/*"],
   "exclude": ["src/**/*.test.ts", "src/__tests__/"]

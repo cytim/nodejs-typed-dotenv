@@ -1,10 +1,10 @@
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
-import { parse as dotenvParse, DotenvConfigOptions, DotenvConfigOutput, DotenvParseOutput } from 'dotenv';
+import { parse as dotenvParse, DotenvConfigOptions, DotenvConfigOutput } from 'dotenv';
 import { log } from './logger';
 import { config as tmplConfig } from './template';
 import { compose } from './compose';
-import { ConfigOptions, ConfigOutput, Encoding, ComposeOptions, TemplateParseOutput } from './types';
+import { ConfigOptions, ConfigOutput, Encoding } from './types';
 
 /**
  * Override `dotenv.config` to by-pass the `process.env` assignment.

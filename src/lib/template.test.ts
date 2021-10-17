@@ -1,36 +1,31 @@
 import fs, { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { SinonStub, stub } from 'sinon';
 import { parse, config } from './template';
 import { TemplateParseOutput } from './types';
 
 describe('lib/template', () => {
-  let logStub: SinonStub, testTmplBuffer: Buffer, testTmplParsed: TemplateParseOutput;
+  let testTmplBuffer: Buffer, testTmplParsed: TemplateParseOutput;
 
   beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(() => undefined);
+
     testTmplBuffer = readFileSync(resolve(__dirname, '../__test__/data/template.env'));
     testTmplParsed = JSON.parse(readFileSync(resolve(__dirname, '../__test__/data/template.parsed.json')).toString());
-  });
-
-  beforeEach(() => {
-    logStub = stub(console, 'log');
-  });
-
-  afterEach(() => {
-    logStub.restore();
   });
 
   describe('parse()', () => {
     it('parse the template', () => {
       const annotations = parse(testTmplBuffer);
-      expect(logStub.called).toBe(false);
       expect(annotations).toStrictEqual(testTmplParsed);
+
+      expect(console.log).not.toBeCalled();
     });
 
     it('print logs when debug is set to true', () => {
       const annotations = parse(testTmplBuffer, { debug: true });
-      expect(logStub.called).toBe(true);
       expect(annotations).toStrictEqual(testTmplParsed);
+
+      expect(console.log).toBeCalled();
     });
 
     it('throw error because one of the variables is not surrounded by any valid annotation', () => {
@@ -98,22 +93,22 @@ FOO=
   });
 
   describe('config()', () => {
-    let readFileSyncStub: SinonStub;
+    let readFileSyncStub: jest.SpyInstance;
 
     beforeEach(() => {
-      readFileSyncStub = stub(fs, 'readFileSync').returns(testTmplBuffer);
+      readFileSyncStub = jest.spyOn(fs, 'readFileSync').mockReturnValue(testTmplBuffer);
     });
 
     afterEach(() => {
-      readFileSyncStub.restore();
+      readFileSyncStub.mockRestore();
     });
 
     it('config the template, with only path', () => {
       const path = '/custom/path/to/.env.template';
       const { parsed } = config({ path });
-      expect(readFileSyncStub.getCall(0).args[0]).toStrictEqual(path);
-      expect(readFileSyncStub.getCall(0).args[1]).toStrictEqual({ encoding: 'utf8' });
-      expect(logStub.called).toBe(false);
+      expect(readFileSyncStub).toBeCalledTimes(1);
+      expect(readFileSyncStub).nthCalledWith(1, path, { encoding: 'utf8' });
+      expect(console.log).not.toBeCalled();
       expect(parsed).toStrictEqual(testTmplParsed);
     });
 
@@ -121,15 +116,14 @@ FOO=
       // defaults to `.env.template` under the current working directory.
       const path = resolve(process.cwd(), './.env.template');
       const { parsed } = config({ encoding: 'latin1' });
-      expect(readFileSyncStub.getCall(0).args[0]).toStrictEqual(path);
-      expect(readFileSyncStub.getCall(0).args[1]).toStrictEqual({ encoding: 'latin1' });
-      expect(logStub.called).toBe(false);
+      expect(readFileSyncStub).nthCalledWith(1, path, { encoding: 'latin1' });
+      expect(console.log).not.toBeCalled();
       expect(parsed).toStrictEqual(testTmplParsed);
     });
 
     it('config the template, with debug set to true', () => {
       const { parsed } = config({ debug: true });
-      expect(logStub.called).toBe(true);
+      expect(console.log).toBeCalled();
       expect(parsed).toStrictEqual(testTmplParsed);
     });
 
@@ -139,14 +133,14 @@ FOO=
     });
 
     it('return an empty parsed template, if the template file does not exist', () => {
-      readFileSyncStub.restore();
+      readFileSyncStub.mockRestore();
       const { error, parsed } = config({ path: '/random/unknown/path/.env.template' });
       expect(error).toBeUndefined();
       expect(parsed).toStrictEqual({});
     });
 
     it('throw error because the template path does not exist', () => {
-      readFileSyncStub.restore();
+      readFileSyncStub.mockRestore();
       const { error } = config({ path: '/random/unknown/path/.env.template', errorOnFileNotFound: true });
       expect(error?.message).toContain('no such file or directory');
     });
