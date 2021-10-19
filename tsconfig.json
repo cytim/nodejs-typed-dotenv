@@ -13,6 +13,7 @@
     /* Customised */
     "rootDir": "./src",
     "outDir": "./dist",
+    "declaration": true,
     "noUnusedLocals": true,
     "useUnknownInCatchVariables": false
   },
