@@ -1,3 +1,5 @@
+![Continuous Integration](https://github.com/cytim/nodejs-typed-dotenv/actions/workflows/ci.yml/badge.svg?branch=main)
+
 # typed-dotenv
 
 > ✨ Inspired by [dotenv](https://www.npmjs.com/package/dotenv) and
