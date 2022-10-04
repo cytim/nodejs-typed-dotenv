@@ -1,5 +1,11 @@
 # Changelog
 
+## [10.0.2](https://github.com/cytim/nodejs-typed-dotenv/compare/v10.0.1...v10.0.2) (2022-10-04)
+
+### Changed
+
+- Bump minimist from 1.2.5 to 1.2.6 by @dependabot in https://github.com/cytim/nodejs-typed-dotenv/pull/5
+
 ## [10.0.1](https://github.com/cytim/nodejs-typed-dotenv/compare/v10.0.0...v10.0.1) (2021-10-19)
 
 ### Changed
